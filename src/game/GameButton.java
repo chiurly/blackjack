@@ -8,9 +8,10 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
-public class GameButton extends GameObject {
+public class GameButton extends GameObject implements Renderable {
 
     private String text;
+    private int textStyle;
     private int textSize;
     private Alignment textHorizontalAlignment;
     private Alignment textVerticalAlignment;
@@ -26,6 +27,7 @@ public class GameButton extends GameObject {
 
     public GameButton(String text) {
         this.text = text;
+        textStyle = Font.BOLD;
         textSize = 16;
         textHorizontalAlignment = Alignment.CENTER;
         textVerticalAlignment = Alignment.CENTER;
@@ -46,7 +48,7 @@ public class GameButton extends GameObject {
         BufferedImage image = new BufferedImage(getSize().intX(), getSize().intY(), BufferedImage.TYPE_INT_ARGB);
 
         Graphics graphics = image.createGraphics();
-        graphics.setFont(new Font("Trebuchet MS", Font.PLAIN, textSize));
+        graphics.setFont(new Font("Trebuchet MS", textStyle, textSize));
 
         if (pressed) {
             graphics.setColor(pressedBackgroundColor);
@@ -69,6 +71,10 @@ public class GameButton extends GameObject {
 
     public String getText() {
         return text;
+    }
+
+    public int getTextStyle() {
+        return textStyle;
     }
 
     public int getTextSize() {
@@ -105,6 +111,10 @@ public class GameButton extends GameObject {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public void setTextStyle(int textStyle) {
+        this.textStyle = textStyle;
     }
 
     public void setTextSize(int textSize) {

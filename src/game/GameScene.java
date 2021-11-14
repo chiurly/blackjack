@@ -20,12 +20,13 @@ public class GameScene {
     private Color sceneBackgroundColor;
 
     private ArrayList<GameLabel> labels;
-    private GameLabel playerMoneyLabel;
-    private GameLabel playerBetLabel;
+    private GameLabel balanceLabel;
+    private GameLabel betLabel;
+    private GameLabel balanceValueLabel;
+    private GameLabel betValueLabel;
     private GameLabel dealerValueLabel;
     private GameLabel playerValueLabel;
     private GameLabel gameOverLabel;
-
 
     private ArrayList<GameButton> buttons;
     private GameButton playButton;
@@ -45,10 +46,10 @@ public class GameScene {
         buttons = new ArrayList<>();
 
         mainDeck = new Deck();
+        mainDeck.generate();
+
         dealerDeck = new Deck();
         player = new Player();
-
-        mainDeck.generate();
 
         initLabels();
         initButtons();
@@ -92,11 +93,11 @@ public class GameScene {
             }
             if (decreaseBetButton.isEnabled() && decreaseBetButton.isPressed() && decreaseBetButton.getBounds().contains(e.getX(), e.getY())) {
                 player.subtractBet(BET_INCREMENT);
-                playerBetLabel.setText("My bet: " + player.getBet());
+                updateBetText();
             }
             if (increaseBetButton.isEnabled() && increaseBetButton.isPressed() && increaseBetButton.getBounds().contains(e.getX(), e.getY())) {
                 player.addBet(BET_INCREMENT);
-                playerBetLabel.setText("My bet: " + player.getBet());
+                updateBetText();
             }
             if (hitButton.isEnabled() && hitButton.isPressed() && hitButton.getBounds().contains(e.getX(), e.getY())) {
                 hit();
@@ -112,19 +113,39 @@ public class GameScene {
     }
 
     private void initLabels() {
-        playerMoneyLabel = new GameLabel("My money: " + player.getMoney());
-        playerMoneyLabel.setAnchorPoint(new Vector2(0, 1));
-        playerMoneyLabel.setPosition(new Vector2(16, 464));
-        playerMoneyLabel.setSize(new Vector2(128, 32));
-        playerMoneyLabel.setTextHorizontalAlignment(Alignment.START);
-        labels.add(playerMoneyLabel);
+        balanceLabel = new GameLabel();
+        balanceLabel.setAnchorPoint(new Vector2(0, 1));
+        balanceLabel.setPosition(new Vector2(16, 432));
+        balanceLabel.setSize(new Vector2(128, 16));
+        balanceLabel.setTextHorizontalAlignment(Alignment.START);
+        balanceLabel.setText("BALANCE");
+        labels.add(balanceLabel);
 
-        playerBetLabel = new GameLabel("My bet: " + player.getBet());
-        playerBetLabel.setAnchorPoint(new Vector2(0, 1));
-        playerBetLabel.setPosition(new Vector2(16, 432));
-        playerBetLabel.setSize(new Vector2(128, 32));
-        playerBetLabel.setTextHorizontalAlignment(Alignment.START);
-        labels.add(playerBetLabel);
+        balanceValueLabel = new GameLabel();
+        balanceValueLabel.setAnchorPoint(new Vector2(0, 1));
+        balanceValueLabel.setPosition(new Vector2(16, 464));
+        balanceValueLabel.setSize(new Vector2(128, 32));
+        balanceValueLabel.setTextHorizontalAlignment(Alignment.START);
+        balanceValueLabel.setTextSize(24);
+        updateBalanceText();
+        labels.add(balanceValueLabel);
+
+        betLabel = new GameLabel();
+        betLabel.setAnchorPoint(new Vector2(1, 1));
+        betLabel.setPosition(new Vector2(624, 432));
+        betLabel.setSize(new Vector2(128, 16));
+        betLabel.setTextHorizontalAlignment(Alignment.START);
+        betLabel.setText("BET");
+        labels.add(betLabel);
+
+        betValueLabel = new GameLabel();
+        betValueLabel.setAnchorPoint(new Vector2(1, 1));
+        betValueLabel.setPosition(new Vector2(624, 464));
+        betValueLabel.setSize(new Vector2(128, 32));
+        betValueLabel.setTextHorizontalAlignment(Alignment.START);
+        betValueLabel.setTextSize(24);
+        updateBetText();
+        labels.add(betValueLabel);
 
         dealerValueLabel = new GameLabel();
         dealerValueLabel.setPosition(new Vector2(16, 16));
@@ -149,32 +170,34 @@ public class GameScene {
     }
 
     private void initButtons() {
-        playButton = new GameButton("Play");
-        playButton.setAnchorPoint(new Vector2(1, 1));
-        playButton.setPosition(new Vector2(352, 464));
+        playButton = new GameButton("PLAY");
+        playButton.setAnchorPoint(new Vector2(0.5, 1));
+        playButton.setPosition(new Vector2(320, 464));
         playButton.setSize(new Vector2(128, 32));
         buttons.add(playButton);
 
-        decreaseBetButton = new GameButton("Decrease Bet");
+        decreaseBetButton = new GameButton("-");
         decreaseBetButton.setAnchorPoint(new Vector2(1, 1));
         decreaseBetButton.setPosition(new Vector2(488, 464));
-        decreaseBetButton.setSize(new Vector2(128, 32));
+        decreaseBetButton.setSize(new Vector2(24, 24));
+        decreaseBetButton.setTextSize(24);
         buttons.add(decreaseBetButton);
 
-        increaseBetButton = new GameButton("Increase Bet");
+        increaseBetButton = new GameButton("+");
         increaseBetButton.setAnchorPoint(new Vector2(1, 1));
-        increaseBetButton.setPosition(new Vector2(624, 464));
-        increaseBetButton.setSize(new Vector2(128, 32));
+        increaseBetButton.setPosition(new Vector2(488, 440));
+        increaseBetButton.setSize(new Vector2(24, 24));
+        increaseBetButton.setTextSize(24);
         buttons.add(increaseBetButton);
 
-        hitButton = new GameButton("Hit");
+        hitButton = new GameButton("HIT");
         hitButton.setAnchorPoint(new Vector2(1, 1));
         hitButton.setPosition(new Vector2(312, 464));
         hitButton.setSize(new Vector2(128, 32));
         hitButton.setEnabled(false);
         buttons.add(hitButton);
 
-        standButton = new GameButton("Stand");
+        standButton = new GameButton("STAND");
         standButton.setAnchorPoint(new Vector2(0, 1));
         standButton.setPosition(new Vector2(328, 464));
         standButton.setSize(new Vector2(128, 32));
@@ -227,7 +250,7 @@ public class GameScene {
     private void start() {
         gameOverLabel.setEnabled(false);
         player.subtractMoney(player.getBet());
-        playerMoneyLabel.setText("My money: " + player.getMoney());
+        updateBalanceText();
 
         playButton.setEnabled(false);
         decreaseBetButton.setEnabled(false);
@@ -252,16 +275,18 @@ public class GameScene {
         dealerDeck.draw(mainDeck);
         playerDeck.draw(mainDeck);
 
-        dealerValueLabel.setText("Dealer: " + dealerDeck.calculateValue());
-        playerValueLabel.setText("You: " + playerDeck.calculateValue());
+        updateDealerValueText(dealerDeck.calculateValue());
+        updatePlayerValueText(playerDeck.calculateValue());
     }
 
     private void hit() {
         Deck playerDeck = player.getDeck();
         playerDeck.draw(mainDeck);
-        playerValueLabel.setText("You: " + playerDeck.calculateValue());
 
-        if (playerDeck.calculateValue() > 21) {
+        int playerValue = playerDeck.calculateValue();
+        updatePlayerValueText(playerValue);
+
+        if (playerValue > 21) {
             gameOver(GameResult.LOSE);
         }
     }
@@ -282,7 +307,7 @@ public class GameScene {
             dealerValue = dealerDeck.calculateValue();
         }
 
-        dealerValueLabel.setText("Dealer: " + dealerValue);
+        updateDealerValueText(dealerValue);
 
         if (dealerValue > 21 || playerValue > dealerValue) {
             gameOver(GameResult.WIN);
@@ -295,22 +320,22 @@ public class GameScene {
 
     private void gameOver(GameResult gameResult) {
         if (gameResult == GameResult.WIN) {
-            gameOverLabel.setText("You win!");
+            gameOverLabel.setText("YOU WIN!");
             player.addMoney(player.getBet());
             player.addMoney(player.getBet());
 
         } else if (gameResult == GameResult.LOSE) {
-            gameOverLabel.setText("Dealer wins!");
+            gameOverLabel.setText("DEALER WINS!");
             player.updateBet();
-            playerBetLabel.setText("My bet: " + player.getBet());
+            updateBetText();
 
         } else {
-            gameOverLabel.setText("Tie!");
+            gameOverLabel.setText("TIE!");
             player.addMoney(player.getBet());
         }
 
         gameOverLabel.setEnabled(true);
-        playerMoneyLabel.setText("My money: " + player.getMoney());
+        updateBalanceText();
 
         playButton.setEnabled(true);
         increaseBetButton.setEnabled(true);
@@ -318,6 +343,22 @@ public class GameScene {
 
         hitButton.setEnabled(false);
         standButton.setEnabled(false);
+    }
+
+    private void updateBalanceText() {
+        balanceValueLabel.setText("$" + player.getMoney());
+    }
+
+    private void updateBetText() {
+        betValueLabel.setText("$" + player.getBet());
+    }
+
+    private void updateDealerValueText(int value) {
+        dealerValueLabel.setText("DEALER: " + value);
+    }
+
+    private void updatePlayerValueText(int value) {
+        playerValueLabel.setText("YOU: " + value);
     }
 
 }

@@ -9,12 +9,14 @@ import java.util.Objects;
 
 public class Deck {
 
+    private static final int FULL_DECK_SIZE = 52;
+
     private static BufferedImage flippedBlack;
     private static BufferedImage flippedRed;
     private ArrayList<Card> cards;
 
     public Deck() {
-        cards = new ArrayList<>();
+        cards = new ArrayList<>(FULL_DECK_SIZE);
     }
 
     public void generate() {

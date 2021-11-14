@@ -21,9 +21,6 @@ public abstract class GameObject {
         updateBounds();
     }
 
-    public abstract void update();
-    public abstract BufferedImage getImage();
-
     public Vector2 getAnchorPoint() {
         return anchorPoint;
     }

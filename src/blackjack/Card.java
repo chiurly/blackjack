@@ -1,10 +1,11 @@
 package blackjack;
 
 import game.GameObject;
+import game.Renderable;
 
 import java.awt.image.BufferedImage;
 
-public class Card extends GameObject {
+public class Card extends GameObject implements Renderable {
 
     public static final int CARD_SIZE_PX = 128;
 

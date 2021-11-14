@@ -6,6 +6,7 @@ public class Player {
 
     public static final String STARTING_MONEY = "100.00";
     public static final String DEFAULT_BET = "10.00";
+    public static final String MAX_BET = "1000.00";
 
     private BigDecimal money;
     private BigDecimal bet;
@@ -18,24 +19,43 @@ public class Player {
     }
 
     public void addMoney(BigDecimal addend) {
+        if (addend == null) {
+            return;
+        }
         money = money.add(addend);
     }
 
     public void subtractMoney(BigDecimal subtrahend) {
+        if (subtrahend == null) {
+            return;
+        }
         money = money.subtract(subtrahend);
     }
 
     public void addBet(BigDecimal addend) {
-        BigDecimal newBet = bet.add(addend);
+        if (addend == null) {
+            return;
+        }
 
-        if (newBet.compareTo(money) < 0) {
-            bet = newBet;
-        } else {
+        BigDecimal newBet = bet.add(addend);
+        BigDecimal maxBet = new BigDecimal(MAX_BET);
+
+        if (newBet.compareTo(maxBet) > 0) {
+            newBet = maxBet;
+        }
+
+        if (newBet.compareTo(money) > 0) {
             bet = money;
+        } else {
+            bet = newBet;
         }
     }
 
     public void subtractBet(BigDecimal subtrahend) {
+        if (subtrahend == null) {
+            return;
+        }
+
         BigDecimal newBet = bet.subtract(subtrahend);
 
         if (newBet.compareTo(new BigDecimal("0.00")) < 0) {
